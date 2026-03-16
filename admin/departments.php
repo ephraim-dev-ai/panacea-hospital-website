@@ -1,6 +1,16 @@
  <?php
 require_once dirname(__FILE__) . '/../includes/helpers.php';
 requireLogin();
+$admin = currentAdmin();
+if (!in_array($admin['role'], ['superadmin','admin','receptionist','doctor'])) {
+    flash('main','Access denied.','error');
+    header('Location: /panacea/admin/index.php'); exit;
+}
+$admin = currentAdmin();
+if (!in_array($admin['role'], ['superadmin','admin'])) {
+    flash('main','Access denied.','error');
+    header('Location: /panacea/admin/index.php'); exit;
+}
 $pdo    = db();
 $action = $_GET['action'] ?? 'list';
 $id     = (int)($_GET['id'] ?? 0);

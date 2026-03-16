@@ -265,6 +265,11 @@ $doctors     = $pdo->query('SELECT d.*,dep.name AS dept_name FROM doctors d JOIN
         <li class="nav-item"><a class="nav-link" href="#appointment">Appointment</a></li>
         <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
         <li class="nav-item ms-2">
+          <li class="nav-item">
+  <a class="nav-link" href="/panacea/portal.php">
+    <i class="bi bi-person-circle me-1"></i>Patient Portal
+  </a>
+</li>
           <a class="nav-link btn-emergency" href="tel:+251917000000">
             <i class="bi bi-telephone-fill me-1"></i> Emergency
           </a>

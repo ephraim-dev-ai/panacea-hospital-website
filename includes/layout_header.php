@@ -194,75 +194,111 @@ $flash  = showFlash('main');
       <span>Admin Portal</span>
     </div>
   </div>
+<div class="nav-section">
+  <?php $role = $admin['role']; ?>
 
-  <div class="nav-section">
-    <div class="nav-label mt-0">Main</div>
-    <div class="nav-item">
-      <a href="<?= ADMIN_URL ?>/index.php" class="nav-link <?= ($pageTitle === 'Dashboard') ? 'active' : '' ?>">
-        <i class="bi bi-speedometer2"></i> Dashboard
-      </a>
-    </div>
+  <div class="nav-label mt-0">Main</div>
+  <div class="nav-item">
+    <a href="/panacea/admin/index.php"
+       class="nav-link <?= ($pageTitle==='Dashboard')?'active':'' ?>">
+      <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+  </div>
 
-    <div class="nav-label mt-3">Patients</div>
-    <div class="nav-item">
-      <a href="<?= ADMIN_URL ?>/patients.php" class="nav-link <?= str_contains($pageTitle ?? '', 'Patient') ? 'active' : '' ?>">
-        <i class="bi bi-people-fill"></i> All Patients
-      </a>
-    </div>
-    <div class="nav-item">
-      <a href="<?= ADMIN_URL ?>/patients.php?action=add" class="nav-link">
-        <i class="bi bi-person-plus"></i> Register Patient
-      </a>
-    </div>
-    <div class="nav-item">
-      <a href="<?= ADMIN_URL ?>/records.php" class="nav-link <?= str_contains($pageTitle ?? '', 'Record') ? 'active' : '' ?>">
-        <i class="bi bi-journal-medical"></i> Medical Records
-      </a>
-    </div>
+  <?php if (in_array($role, ['superadmin','admin','receptionist'])): ?>
+  <div class="nav-label mt-3">Patients</div>
+  <div class="nav-item">
+    <a href="/panacea/admin/patients.php"
+       class="nav-link <?= str_contains($pageTitle??'','Patient')?'active':'' ?>">
+      <i class="bi bi-people-fill"></i> All Patients
+    </a>
+  </div>
+  <div class="nav-item">
+    <a href="/panacea/admin/patients.php?action=add"
+       class="nav-link">
+      <i class="bi bi-person-plus"></i> Register Patient
+    </a>
+  </div>
+  <?php endif; ?>
 
-    <div class="nav-label mt-3">Appointments</div>
-    <div class="nav-item">
-      <a href="<?= ADMIN_URL ?>/appointments.php" class="nav-link <?= str_contains($pageTitle ?? '', 'Appointment') ? 'active' : '' ?>">
-        <i class="bi bi-calendar2-week"></i> All Appointments
-        <?php if ($stats['pending_appts']): ?>
-          <span class="nav-badge"><?= $stats['pending_appts'] ?></span>
-        <?php endif; ?>
-      </a>
-    </div>
-    <div class="nav-item">
-      <a href="<?= ADMIN_URL ?>/appointments.php?action=add" class="nav-link">
-        <i class="bi bi-calendar-plus"></i> New Appointment
-      </a>
-    </div>
+  <?php if (in_array($role, ['superadmin','admin','doctor'])): ?>
+  <div class="nav-item">
+    <a href="/panacea/admin/records.php"
+       class="nav-link <?= str_contains($pageTitle??'','Record')?'active':'' ?>">
+      <i class="bi bi-journal-medical"></i> Medical Records
+    </a>
+  </div>
+  <?php endif; ?>
 
-    <div class="nav-label mt-3">Hospital</div>
-    <div class="nav-item">
-      <a href="<?= ADMIN_URL ?>/doctors.php" class="nav-link <?= str_contains($pageTitle ?? '', 'Doctor') ? 'active' : '' ?>">
-        <i class="bi bi-person-badge"></i> Doctors
-      </a>
-    </div>
-    <div class="nav-item">
-      <a href="<?= ADMIN_URL ?>/departments.php" class="nav-link <?= str_contains($pageTitle ?? '', 'Department') ? 'active' : '' ?>">
-        <i class="bi bi-building"></i> Departments
-      </a>
-    </div>
-    <div class="nav-item">
-      <a href="<?= ADMIN_URL ?>/messages.php" class="nav-link <?= str_contains($pageTitle ?? '', 'Message') ? 'active' : '' ?>">
-        <i class="bi bi-envelope-fill"></i> Messages
-        <?php if ($stats['unread_msgs']): ?>
-          <span class="nav-badge"><?= $stats['unread_msgs'] ?></span>
-        <?php endif; ?>
-      </a>
-    </div>
+  <?php if (in_array($role, ['superadmin','admin','receptionist'])): ?>
+  <div class="nav-label mt-3">Appointments</div>
+  <div class="nav-item">
+    <a href="/panacea/admin/appointments.php"
+       class="nav-link <?= str_contains($pageTitle??'','Appointment')?'active':'' ?>">
+      <i class="bi bi-calendar2-week"></i> All Appointments
+      <?php if ($stats['pending_appts']): ?>
+        <span class="nav-badge"><?= $stats['pending_appts'] ?></span>
+      <?php endif; ?>
+    </a>
+  </div>
+  <div class="nav-item">
+    <a href="/panacea/admin/appointments.php?action=add"
+       class="nav-link">
+      <i class="bi bi-calendar-plus"></i> New Appointment
+    </a>
+  </div>
+  <?php endif; ?>
 
-    <?php if ($admin['role'] === 'superadmin'): ?>
-    <div class="nav-label mt-3">System</div>
-    <div class="nav-item">
-      <a href="<?= ADMIN_URL ?>/users.php" class="nav-link <?= str_contains($pageTitle ?? '', 'User') ? 'active' : '' ?>">
-        <i class="bi bi-shield-lock"></i> Admin Users
-      </a>
-    </div>
-    <?php endif; ?>
+  <?php if (in_array($role, ['superadmin','admin'])): ?>
+  <div class="nav-label mt-3">Hospital</div>
+  <div class="nav-item">
+    <a href="/panacea/admin/doctors.php"
+       class="nav-link <?= str_contains($pageTitle??'','Doctor')?'active':'' ?>">
+      <i class="bi bi-person-badge"></i> Doctors
+    </a>
+  </div>
+  <div class="nav-item">
+    <a href="/panacea/admin/departments.php"
+       class="nav-link <?= str_contains($pageTitle??'','Department')?'active':'' ?>">
+      <i class="bi bi-building"></i> Departments
+    </a>
+  </div>
+  <?php endif; ?>
+
+  <?php if (in_array($role, ['superadmin','admin','receptionist'])): ?>
+  <div class="nav-item">
+    <a href="/panacea/admin/messages.php"
+       class="nav-link <?= str_contains($pageTitle??'','Message')?'active':'' ?>">
+      <i class="bi bi-envelope-fill"></i> Messages
+      <?php if ($stats['unread_msgs']): ?>
+        <span class="nav-badge"><?= $stats['unread_msgs'] ?></span>
+      <?php endif; ?>
+    </a>
+  </div>
+  <?php endif; ?>
+</div>
+<?php if (in_array($admin['role'], ['superadmin','admin'])): ?>
+<div class="nav-label mt-3">System</div>
+<div class="nav-item">
+  <a href="/panacea/admin/users.php"
+     class="nav-link <?= str_contains($pageTitle ?? '', 'Staff') ? 'active' : '' ?>">
+    <i class="bi bi-people-fill"></i> Staff Accounts
+  </a>
+</div>
+<div class="nav-label mt-3">Billing</div>
+<div class="nav-item">
+  <a href="/panacea/admin/invoices.php"
+     class="nav-link <?= str_contains($pageTitle??'','Invoice')?'active':'' ?>">
+    <i class="bi bi-receipt"></i> Invoices
+  </a>
+</div>
+<div class="nav-item">
+  <a href="/panacea/admin/services.php"
+     class="nav-link <?= str_contains($pageTitle??'','Service')?'active':'' ?>">
+    <i class="bi bi-list-check"></i> Services & Pricing
+  </a>
+</div>
+<?php endif; ?>
   </div>
 
   <div class="sidebar-footer">
