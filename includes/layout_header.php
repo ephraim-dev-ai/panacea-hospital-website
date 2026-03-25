@@ -277,6 +277,13 @@ $flash  = showFlash('main');
   </div>
   <?php endif; ?>
 </div>
+<div class="nav-label mt-3">Reports</div>
+<div class="nav-item">
+  <a href="/panacea/admin/reports.php"
+     class="nav-link <?= str_contains($pageTitle??'','Report')?'active':'' ?>">
+    <i class="bi bi-bar-chart-line-fill"></i> Reports & Exports
+  </a>
+</div>
 <?php if (in_array($admin['role'], ['superadmin','admin'])): ?>
 <div class="nav-label mt-3">System</div>
 <div class="nav-item">
@@ -300,6 +307,12 @@ $flash  = showFlash('main');
 </div>
 <?php endif; ?>
   </div>
+  <div class="nav-item">
+  <a href="/panacea/admin/change_password.php"
+     class="nav-link">
+    <i class="bi bi-key-fill"></i> Change Password
+  </a>
+</div>
 
   <div class="sidebar-footer">
     <div class="admin-chip">

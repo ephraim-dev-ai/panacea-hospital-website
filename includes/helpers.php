@@ -1,27 +1,38 @@
 <?php
+// ============================================================
+//  PANACEA HOSPITAL – Helpers (Security Enhanced)
+//  includes/helpers.php  — REPLACE existing file
+// ============================================================
 require_once dirname(__FILE__) . '/../config/database.php';
+require_once dirname(__FILE__) . '/security.php';
 
+// ── Auth ──────────────────────────────────────────────────
 function startSession(): void {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_set_cookie_params(['httponly' => true, 'samesite' => 'Strict']);
-        session_start();
-    }
+    secureSession();
 }
 
 function isLoggedIn(): bool {
-    startSession();
-    return isset($_SESSION['admin_id']);
+    secureSession();
+    if (!isset($_SESSION['admin_id'])) return false;
+    // Check session timeout
+    if (!checkSessionTimeout()) {
+        session_destroy();
+        return false;
+    }
+    return true;
 }
 
 function requireLogin(): void {
     if (!isLoggedIn()) {
+        // Save intended URL for redirect after login
+        $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'] ?? '';
         header('Location: /panacea/admin/login.php');
         exit;
     }
 }
 
 function currentAdmin(): array {
-    startSession();
+    secureSession();
     return [
         'id'       => $_SESSION['admin_id']   ?? 0,
         'username' => $_SESSION['admin_user']  ?? '',
@@ -34,17 +45,22 @@ function logActivity(string $action, string $target = ''): void {
     $admin = currentAdmin();
     if (!$admin['id']) return;
     $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-    db()->prepare('INSERT INTO activity_log (admin_id, action, target, ip_address) VALUES (?,?,?,?)')
-        ->execute([$admin['id'], $action, $target, $ip]);
+    try {
+        db()->prepare('INSERT INTO activity_log (admin_id, action, target, ip_address) VALUES (?,?,?,?)')
+            ->execute([$admin['id'], $action, $target, $ip]);
+    } catch (Exception $e) {
+        // Silently fail if activity_log doesn't exist
+    }
 }
 
+// ── Input / Security ─────────────────────────────────────
 function clean(?string $val): string {
     if ($val === null) return '';
     return htmlspecialchars(trim($val), ENT_QUOTES, 'UTF-8');
 }
 
 function csrf(): string {
-    startSession();
+    secureSession();
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
@@ -52,14 +68,16 @@ function csrf(): string {
 }
 
 function verifyCsrf(): void {
-    startSession();
-    $token = $_POST['csrf_token'] ?? '';
-    if (!hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
+    secureSession();
+    $token = $_POST['csrf_token'] ?? $_GET['csrf_token'] ?? '';
+    if (!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
+        securityLog('CSRF_VIOLATION', $_SERVER['REQUEST_URI'] ?? '');
         http_response_code(403);
-        die('Invalid CSRF token.');
+        die('<div style="font-family:sans-serif;padding:40px;color:#c0162c"><h2>Security Error</h2><p>Invalid security token. Please go back and try again.</p><a href="/panacea/admin/">Return to Admin</a></div>');
     }
 }
 
+// ── Patient ID generator ─────────────────────────────────
 function generatePatientId(): string {
     $year  = date('Y');
     $stmt  = db()->query("SELECT COUNT(*) FROM patients WHERE YEAR(registered_at) = $year");
@@ -67,19 +85,21 @@ function generatePatientId(): string {
     return sprintf('PH-%s-%04d', $year, $count);
 }
 
+// ── Appointment ref generator ─────────────────────────────
 function generateApptRef(): string {
     $stmt  = db()->query('SELECT COUNT(*) FROM appointments');
     $count = (int)$stmt->fetchColumn() + 1;
     return sprintf('APT-%08d', $count);
 }
 
+// ── Flash messages ────────────────────────────────────────
 function flash(string $key, string $msg, string $type = 'success'): void {
-    startSession();
+    secureSession();
     $_SESSION['flash'][$key] = ['msg' => $msg, 'type' => $type];
 }
 
 function getFlash(string $key): ?array {
-    startSession();
+    secureSession();
     if (isset($_SESSION['flash'][$key])) {
         $f = $_SESSION['flash'][$key];
         unset($_SESSION['flash'][$key]);
@@ -102,6 +122,7 @@ function showFlash(string $key): string {
          . '<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>';
 }
 
+// ── Dashboard stats ───────────────────────────────────────
 function dashStats(): array {
     $pdo = db();
     return [
@@ -114,14 +135,18 @@ function dashStats(): array {
     ];
 }
 
+// ── Pagination helper ─────────────────────────────────────
 function paginate(int $total, int $perPage, int $current): array {
     $pages = (int)ceil($total / $perPage);
     return ['total' => $total, 'per_page' => $perPage, 'current' => $current, 'pages' => $pages];
 }
 
+// ── Age from DOB ──────────────────────────────────────────
 function calcAge(string $dob): int {
     return (int)(new DateTime($dob))->diff(new DateTime())->y;
 }
+
+// ── Status badge ──────────────────────────────────────────
 function statusBadge(string $status): string {
     $map = [
         'Pending'    => 'warning',
@@ -133,6 +158,9 @@ function statusBadge(string $status): string {
         'Inactive'   => 'secondary',
         'Discharged' => 'info',
         'Deceased'   => 'dark',
+        'Unpaid'     => 'danger',
+        'Paid'       => 'success',
+        'Partial'    => 'warning',
     ];
     $c = $map[$status] ?? 'secondary';
     return "<span class=\"badge bg-$c\">" . clean($status) . '</span>';

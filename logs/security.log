@@ -1,0 +1,12 @@
+[2026-03-25 13:50:22] [::1] LOGIN_FAILED Username: @receptionist
+[2026-03-25 13:50:34] [::1] LOGIN_SUCCESS User: receptionist
+[2026-03-25 13:54:23] [::1] LOGIN_SUCCESS User: dr. ephraim
+[2026-03-25 13:54:50] [::1] LOGIN_SUCCESS User: admin
+[2026-03-25 14:01:04] [::1] LOGIN_FAILED Username: adminfdyr
+[2026-03-25 14:01:22] [::1] LOGIN_FAILED Username: admi
+[2026-03-25 14:01:41] [::1] LOGIN_FAILED Username: admihjhjiooy
+[2026-03-25 14:01:47] [::1] LOGIN_FAILED Username: admihjhjiooy
+[2026-03-25 14:02:06] [::1] LOGIN_FAILED Username: admin
+[2026-03-25 14:02:58] [::1] LOGIN_BLOCKED IP blocked for 15 more minutes
+[2026-03-25 14:03:19] [::1] LOGIN_BLOCKED IP blocked for 14 more minutes
+[2026-03-25 14:33:53] [::1] LOGIN_SUCCESS User: admin
