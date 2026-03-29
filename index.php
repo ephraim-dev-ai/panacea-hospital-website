@@ -440,7 +440,13 @@ $doctors     = $pdo->query('SELECT d.*,dep.name AS dept_name FROM doctors d JOIN
       <div class="col-sm-6 col-lg-3 reveal <?= $delays[$i % 4] ?>">
         <div class="doctor-card">
           <div class="doctor-img">
-            <img src="<?= $photo ?>" alt="<?= htmlspecialchars($doc['full_name']) ?>"/>
+            <?php
+$hasRealPhoto = !empty($doc['photo']) && $doc['photo'] !== 'default-doctor.png';
+$photoSrc = $hasRealPhoto
+    ? '/panacea/uploads/doctors/' . htmlspecialchars($doc['photo'])
+    : $doctorPhotos[$i % count($doctorPhotos)];
+?>
+<img src="<?= $photoSrc ?>" alt="<?= htmlspecialchars($doc['full_name']) ?>"/>
             <div class="doctor-overlay"></div>
             <div class="doctor-specialty-badge"><?= htmlspecialchars($doc['dept_name']) ?></div>
           </div>
