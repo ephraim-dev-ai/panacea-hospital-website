@@ -291,11 +291,23 @@ require_once dirname(__FILE__) . '/../includes/layout_header.php';
             </div>
           </td>
           <td>
-            <div class="d-flex gap-1">
-              <a href="?action=edit&id=<?= $a['id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
-              <a href="?action=delete&id=<?= $a['id'] ?>" class="btn btn-sm btn-outline-danger"
-                 data-confirm="Delete this appointment?"><i class="bi bi-trash"></i></a>
-            </div>
+           <div class="d-flex gap-1">
+  <a href="?action=edit&id=<?= $a['id'] ?>"
+     class="btn btn-sm btn-outline-secondary" title="Edit">
+    <i class="bi bi-pencil"></i>
+  </a>
+  <a href="/panacea/admin/print_appointment.php?id=<?= $a['id'] ?>"
+     target="_blank"
+     class="btn btn-sm btn-outline-success" title="Print Slip">
+    <i class="bi bi-printer"></i>
+  </a>
+  <a href="?action=delete&id=<?= $a['id'] ?>"
+     class="btn btn-sm btn-outline-danger"
+     data-confirm="Delete this appointment?"
+     title="Delete">
+    <i class="bi bi-trash"></i>
+  </a>
+</div>
           </td>
         </tr>
         <?php endforeach; ?>

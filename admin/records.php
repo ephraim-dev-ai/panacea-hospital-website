@@ -246,6 +246,11 @@ require_once dirname(__FILE__) . '/../includes/layout_header.php';
               <i class="bi bi-pencil"></i>
             </a>
           </td>
+          <a href="/panacea/admin/print_prescription.php?id=<?= $r['id'] ?>"
+   target="_blank"
+   class="btn btn-sm btn-outline-success" title="Print Prescription">
+  <i class="bi bi-printer"></i>
+</a>
         </tr>
         <?php endforeach; ?>
         <?php if (!$records): ?>
